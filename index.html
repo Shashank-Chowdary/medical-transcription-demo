@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Transcription AI - Demo</title>
+    <title>Medical Transcription AI - Debug Version</title>
     <style>
         * {
             margin: 0;
@@ -279,6 +279,52 @@
             font-weight: 500;
         }
 
+        .debug-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+        }
+
+        .debug-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .debug-content {
+            font-family: monospace;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .test-button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+            margin: 10px;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -328,6 +374,10 @@
                 🚀 Process Audio
             </button>
 
+            <button class="test-button" id="testButton">
+                🔧 Test Connection
+            </button>
+
             <div class="loading" id="loadingIndicator">
                 <div class="spinner"></div>
                 <span>Processing your audio... This may take a moment</span>
@@ -350,6 +400,13 @@
             <div class="feature-item">
                 <div class="feature-icon">⚡</div>
                 <div class="feature-text">Fast Processing</div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <div class="debug-title">🔍 Debug Information</div>
+            <div class="debug-content" id="debugContent">
+                Waiting for requests...
             </div>
         </div>
 
@@ -381,172 +438,201 @@
         </div>
     </div>
 
-    <script>
-        const audioFile = document.getElementById('audioFile');
-        const uploadButton = document.getElementById('uploadButton');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const processButton = document.getElementById('processButton');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const resultSection = document.getElementById('resultSection');
-        const transcript = document.getElementById('transcript');
-        const summary = document.getElementById('summary');
-        const medicalTerms = document.getElementById('medicalTerms');
-        const downloadButton = document.getElementById('downloadButton');
+<script>
+    const audioFile = document.getElementById('audioFile');
+    const uploadButton = document.getElementById('uploadButton');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const processButton = document.getElementById('processButton');
+    const testButton = document.getElementById('testButton');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const resultSection = document.getElementById('resultSection');
+    const transcript = document.getElementById('transcript');
+    const summary = document.getElementById('summary');
+    const medicalTerms = document.getElementById('medicalTerms');
+    const downloadButton = document.getElementById('downloadButton');
+    const debugContent = document.getElementById('debugContent');
 
-        // Replace with your actual n8n webhook URL
-        const WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
+    const WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
 
-        let selectedFile = null;
-        let transcriptionData = null;
+    let selectedFile = null;
+    let transcriptionData = null;
 
-        // File upload handlers
-        audioFile.addEventListener('change', handleFileSelect);
-        uploadButton.addEventListener('click', () => audioFile.click());
+    // Event listeners
+    audioFile.addEventListener('change', handleFileSelect);
+    uploadButton.addEventListener('click', () => audioFile.click());
+    processButton.addEventListener('click', processAudio);
+    testButton.addEventListener('click', testConnection);
+    downloadButton.addEventListener('click', downloadDocument);
 
-        // Drag and drop handlers
-        uploadButton.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadButton.classList.add('dragover');
-        });
-
-        uploadButton.addEventListener('dragleave', () => {
-            uploadButton.classList.remove('dragover');
-        });
-
-        uploadButton.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadButton.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileSelect({ target: { files: files } });
-            }
-        });
-
-        processButton.addEventListener('click', processAudio);
-        downloadButton.addEventListener('click', downloadDocument);
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFile = file;
-                fileName.textContent = file.name;
-                fileSize.textContent = formatFileSize(file.size);
-                fileInfo.classList.add('show');
-                processButton.disabled = false;
-                
-                // Reset results
-                resultSection.classList.remove('show');
-                transcriptionData = null;
-            }
+    // Drag and drop
+    uploadButton.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadButton.classList.add('dragover');
+    });
+    uploadButton.addEventListener('dragleave', () => {
+        uploadButton.classList.remove('dragover');
+    });
+    uploadButton.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadButton.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelect({ target: { files: files } });
         }
+    });
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+    function log(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logMessage = `[${timestamp}] ${message}`;
+        const lines = (debugContent.textContent === 'Waiting for requests?' ? [] : debugContent.textContent.split('\n')).concat(logMessage);
+        if (lines.length > 20) lines.splice(0, lines.length - 20);
+        debugContent.textContent = lines.join('\n');
+    }
 
-        async function processAudio() {
-            if (!selectedFile) {
-                alert('Please select an audio file first');
-                return;
-            }
-
-            processButton.disabled = true;
-            loadingIndicator.classList.add('show');
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('show');
+            processButton.disabled = false;
             resultSection.classList.remove('show');
-
-            try {
-                // First, get transcription
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': selectedFile.type || 'audio/mpeg'
-                    },
-                    body: selectedFile
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Check if response is a document (binary)
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/vnd.openxmlformats')) {
-                    // It's a DOCX file - direct download
-                    const blob = await response.blob();
-                    downloadFile(blob, `medical_report_${Date.now()}.docx`);
-                    
-                    // Show success message
-                    showSuccessMessage('Document generated successfully!');
-                } else {
-                    // It's JSON data - show results
-                    const data = await response.json();
-                    transcriptionData = data;
-                    displayResults(data);
-                }
-
-            } catch (error) {
-                console.error('Error processing audio:', error);
-                alert('Error processing audio: ' + error.message);
-            } finally {
-                processButton.disabled = false;
-                loadingIndicator.classList.remove('show');
-            }
+            transcriptionData = null;
+            log(`File selected: ${file.name} (${formatFileSize(file.size)})`);
         }
+    }
 
-        function displayResults(data) {
-            transcript.textContent = data.transcript || 'No transcript available';
-            summary.textContent = data.summary || 'No summary available';
-            medicalTerms.textContent = Array.isArray(data.medical_terms) ? 
-                data.medical_terms.join(', ') : 
-                (data.medical_terms || 'No medical terms identified');
-            
-            resultSection.classList.add('show');
+    function formatFileSize(bytes) {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    async function testConnection() {
+        log('Testing connection to webhook...');
+        testButton.disabled = true;
+        try {
+            const response = await fetch(WEBHOOK_URL, { method: 'POST' });
+            log(`Test response: ${response.status} ${response.statusText}`);
+            showSuccessMessage('✅ Webhook reachable!');
+        } catch (err) {
+            log(`Connection test error: ${err.message}`);
+            showErrorMessage(`Connection test failed: ${err.message}`);
+        } finally {
+            testButton.disabled = false;
         }
+    }
 
-        function showSuccessMessage(message) {
-            const successDiv = document.createElement('div');
-            successDiv.innerHTML = `
-                <div style="background: #d4edda; color: #155724; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #c3e6cb;">
-                    <h3>✅ Success!</h3>
-                    <p>${message}</p>
-                </div>
-            `;
-            resultSection.innerHTML = successDiv.innerHTML;
-            resultSection.classList.add('show');
-        }
+    async function processAudio() {
+        if (!selectedFile) return alert('Please select an audio file first.');
 
-        async function downloadDocument() {
-            if (!transcriptionData) {
-                alert('Please process an audio file first');
+        log('Processing started...');
+        processButton.disabled = true;
+        loadingIndicator.classList.add('show');
+        resultSection.classList.remove('show');
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': selectedFile.type || 'audio/mpeg'
+                },
+                body: selectedFile
+            });
+
+            log(`Response status: ${response.status}`);
+            const contentType = response.headers.get('content-type') || '';
+            log(`Content-Type: ${contentType}`);
+
+            // ➤ Binary DOCX file (application/vnd.openxmlformats)
+            if (contentType.includes('application/vnd.openxmlformats') || contentType.includes('application/octet-stream')) {
+                const blob = await response.blob();
+                log(`Binary blob received (${blob.size} bytes)`);
+                downloadFile(blob, `medical_report_${Date.now()}.docx`);
+                showSuccessMessage('📄 Document downloaded successfully!');
                 return;
             }
 
+            // ➤ JSON response
+            const text = await response.text();
+            if (!text.trim()) throw new Error('Empty response from server');
             try {
-                // This would call your second workflow to generate the document
-                // For now, we'll simulate the download
-                alert('Document download would be implemented here with your actual workflow');
-            } catch (error) {
-                console.error('Error downloading document:', error);
-                alert('Error downloading document: ' + error.message);
+                const data = JSON.parse(text);
+                log(`Parsed JSON: ${Object.keys(data).join(', ')}`);
+                transcriptionData = data;
+                displayResults(data);
+                showSuccessMessage('🎉 Audio processed successfully!');
+            } catch (parseError) {
+                log('Failed to parse JSON: ' + parseError.message);
+                throw new Error('Unexpected response format. Content-Type: ' + contentType);
             }
+        } catch (error) {
+            log('❌ ' + error.message);
+            showErrorMessage('Error: ' + error.message);
+        } finally {
+            loadingIndicator.classList.remove('show');
+            processButton.disabled = false;
         }
+    }
 
-        function downloadFile(blob, filename) {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        }
-    </script>
+    function displayResults(data) {
+        transcript.textContent = data.transcript || data.transcription || 'N/A';
+        summary.textContent = data.summary || 'N/A';
+        const terms = data.medical_terms || data.medicalTerms;
+        medicalTerms.textContent = Array.isArray(terms) ? terms.join(', ') : (terms || 'N/A');
+        resultSection.classList.add('show');
+    }
+
+    function downloadFile(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadDocument() {
+        if (!transcriptionData) return alert('No transcription data available.');
+        const content = `Transcript:\n${transcriptionData.transcript || 'N/A'}\n\nSummary:\n${transcriptionData.summary || 'N/A'}\n\nMedical Terms:\n${transcriptionData.medical_terms || 'N/A'}`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        downloadFile(blob, `medical_report_${Date.now()}.txt`);
+    }
+
+    function showSuccessMessage(message) {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div style="background:#d4edda;color:#155724;padding:20px;margin:10px 0;border:1px solid #c3e6cb;border-radius:10px;text-align:center">
+                ${message}
+            </div>
+        `;
+        resultSection.appendChild(div);
+        resultSection.classList.add('show');
+        setTimeout(() => div.remove(), 5000);
+    }
+
+    function showErrorMessage(message) {
+        resultSection.innerHTML = `
+            <div style="background:#f8d7da;color:#721c24;padding:20px;margin:10px 0;border:1px solid #f5c6cb;border-radius:10px;text-align:center">
+                ❌ ${message}
+                <br><br>
+                <button onclick="location.reload()" style="padding:10px 20px;border:none;background:#dc3545;color:white;border-radius:20px;font-weight:bold;cursor:pointer">
+                    🔄 Try Again
+                </button>
+            </div>
+        `;
+        resultSection.classList.add('show');
+    }
+
+    log('Medical Transcription AI Debug Version loaded');
+    log(`Webhook URL: ${WEBHOOK_URL}`);
+</script>
+
+
 </body>
 </html>
