@@ -1,638 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Transcription AI - Debug Version</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medical Transcription AI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
 
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #4CAF50, #2196F3, #FF9800);
-        }
+    .file-upload {
+      border: 2px dashed #3498db;
+      padding: 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      background: #f9f9f9;
+    }
 
-        .header {
-            margin-bottom: 30px;
-        }
+    .file-upload:hover {
+      background: #eef6fc;
+    }
 
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+    .file-info {
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
 
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
+    .button {
+      padding: 12px 30px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+    }
 
-        .upload-section {
-            margin-bottom: 30px;
-        }
+    .button:hover {
+      background: #45a049;
+    }
 
-        .file-upload-wrapper {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 20px;
-        }
+    .test-button {
+      background: #3498db;
+    }
 
-        .file-upload-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
+    .test-button:hover {
+      background: #2980b9;
+    }
 
-        .file-upload-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            padding: 25px;
-            border: 3px dashed #3498db;
-            border-radius: 15px;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-            font-size: 1.1em;
-            color: #2c3e50;
-            min-height: 120px;
-        }
+    .loading {
+      margin-top: 15px;
+      color: #3498db;
+      font-weight: bold;
+    }
 
-        .file-upload-button:hover {
-            border-color: #2980b9;
-            background: #e3f2fd;
-            transform: translateY(-2px);
-        }
+    .debug-section {
+      margin-top: 30px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
 
-        .file-upload-button.dragover {
-            border-color: #27ae60;
-            background: #e8f5e8;
-        }
+    .debug-section h2 {
+      margin-bottom: 10px;
+      font-size: 1em;
+      color: #333;
+    }
 
-        .upload-icon {
-            font-size: 3em;
-            color: #3498db;
-        }
-
-        .upload-text {
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .upload-text .main-text {
-            font-weight: 600;
-            font-size: 1.2em;
-        }
-
-        .upload-text .sub-text {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-
-        .file-info {
-            background: #e8f5e8;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            border-left: 4px solid #27ae60;
-            display: none;
-        }
-
-        .file-info.show {
-            display: block;
-        }
-
-        .process-button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-            margin-top: 20px;
-        }
-
-        .process-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(76, 175, 80, 0.4);
-        }
-
-        .process-button:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .loading {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            color: #3498db;
-        }
-
-        .loading.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e3f2fd;
-            border-top: 2px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result-section {
-            margin-top: 30px;
-            display: none;
-        }
-
-        .result-section.show {
-            display: block;
-        }
-
-        .result-box {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        .result-title {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .result-content {
-            color: #34495e;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .download-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f1f3f4;
-            border-radius: 10px;
-        }
-
-        .download-button {
-            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1em;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        .download-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .feature-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .feature-item:hover {
-            transform: translateY(-3px);
-        }
-
-        .feature-icon {
-            font-size: 2em;
-            margin-bottom: 8px;
-        }
-
-        .feature-text {
-            color: #2c3e50;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-
-        .debug-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-            text-align: left;
-        }
-
-        .debug-title {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .debug-content {
-            font-family: monospace;
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
-
-        .test-button {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1em;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
-            margin: 10px;
-        }
-
-        .test-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .file-upload-button {
-                padding: 20px;
-                min-height: 100px;
-            }
-
-            .upload-icon {
-                font-size: 2.5em;
-            }
-        }
-    </style>
+    .debug-log {
+      white-space: pre-wrap;
+      color: #444;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏥 Medical Transcription AI</h1>
-            <p>Upload your medical audio recordings and get professional transcripts with AI-powered analysis</p>
-        </div>
 
-        <div class="upload-section">
-            <div class="file-upload-wrapper">
-                <input type="file" id="audioFile" class="file-upload-input" accept=".mp3,.wav,.m4a" />
-                <div class="file-upload-button" id="uploadButton">
-                    <div class="upload-icon">🎙️</div>
-                    <div class="upload-text">
-                        <div class="main-text">Click to upload or drag & drop</div>
-                        <div class="sub-text">Supports MP3, WAV, M4A files (max 50MB)</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="file-info" id="fileInfo">
-                <strong>📁 Selected File:</strong> <span id="fileName"></span><br>
-                <strong>📊 Size:</strong> <span id="fileSize"></span>
-            </div>
+  <div class="container">
+    <h1>Medical Transcription AI</h1>
 
-            <button class="process-button" id="processButton" disabled>
-                🚀 Process Audio
-            </button>
-
-            <button class="test-button" id="testButton">
-                🔧 Test Connection
-            </button>
-
-            <div class="loading" id="loadingIndicator">
-                <div class="spinner"></div>
-                <span>Processing your audio... This may take a moment</span>
-            </div>
-        </div>
-
-        <div class="feature-list">
-            <div class="feature-item">
-                <div class="feature-icon">🎯</div>
-                <div class="feature-text">Accurate Transcription</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">🏥</div>
-                <div class="feature-text">Medical Terminology</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">📄</div>
-                <div class="feature-text">Structured Output</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-text">Fast Processing</div>
-            </div>
-        </div>
-
-        <div class="debug-section">
-            <div class="debug-title">🔍 Debug Information</div>
-            <div class="debug-content" id="debugContent">
-                Waiting for requests...
-            </div>
-        </div>
-
-        <div class="result-section" id="resultSection">
-            <h2>📋 Results</h2>
-            
-            <div class="result-box">
-                <div class="result-title">🎯 Transcript</div>
-                <div class="result-content" id="transcript"></div>
-            </div>
-
-            <div class="result-box">
-                <div class="result-title">📝 Summary</div>
-                <div class="result-content" id="summary"></div>
-            </div>
-
-            <div class="result-box">
-                <div class="result-title">🏥 Medical Terms</div>
-                <div class="result-content" id="medicalTerms"></div>
-            </div>
-
-            <div class="download-section">
-                <h3>📄 Download Medical Document</h3>
-                <p>Get a complete medical prescription and report</p>
-                <button class="download-button" id="downloadButton">
-                    📥 Download DOCX Report
-                </button>
-            </div>
-        </div>
+    <div class="file-upload" id="uploadArea">
+      Click to upload or drag & drop your audio file
+      <input type="file" id="audioFile" accept=".mp3,.wav,.m4a" style="display:none;">
     </div>
 
-<script>
-    const audioFile = document.getElementById('audioFile');
-    const uploadButton = document.getElementById('uploadButton');
+    <div class="file-info" id="fileInfo" style="display:none;"></div>
+
+    <button class="button" id="processButton" disabled>Process Audio</button>
+    <button class="button test-button" id="testButton">Test Connection</button>
+
+    <div class="loading" id="loading" style="display:none;">Processing... Please wait</div>
+
+    <div class="debug-section">
+      <h2>🪲 Debug Log</h2>
+      <div class="debug-log" id="debugLog">Ready...</div>
+    </div>
+  </div>
+
+  <script>
+    const audioFileInput = document.getElementById('audioFile');
+    const uploadArea = document.getElementById('uploadArea');
     const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
     const processButton = document.getElementById('processButton');
     const testButton = document.getElementById('testButton');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const resultSection = document.getElementById('resultSection');
-    const transcript = document.getElementById('transcript');
-    const summary = document.getElementById('summary');
-    const medicalTerms = document.getElementById('medicalTerms');
-    const downloadButton = document.getElementById('downloadButton');
-    const debugContent = document.getElementById('debugContent');
+    const loading = document.getElementById('loading');
+    const debugLog = document.getElementById('debugLog');
 
     const WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
 
     let selectedFile = null;
-    let transcriptionData = null;
-
-    // Event listeners
-    audioFile.addEventListener('change', handleFileSelect);
-    uploadButton.addEventListener('click', () => audioFile.click());
-    processButton.addEventListener('click', processAudio);
-    testButton.addEventListener('click', testConnection);
-    downloadButton.addEventListener('click', downloadDocument);
-
-    // Drag and drop
-    uploadButton.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadButton.classList.add('dragover');
-    });
-    uploadButton.addEventListener('dragleave', () => {
-        uploadButton.classList.remove('dragover');
-    });
-    uploadButton.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadButton.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFileSelect({ target: { files: files } });
-        }
-    });
 
     function log(message) {
-        const timestamp = new Date().toLocaleTimeString();
-        const logMessage = `[${timestamp}] ${message}`;
-        const lines = (debugContent.textContent === 'Waiting for requests?' ? [] : debugContent.textContent.split('\n')).concat(logMessage);
-        if (lines.length > 20) lines.splice(0, lines.length - 20);
-        debugContent.textContent = lines.join('\n');
+      const timestamp = new Date().toLocaleTimeString();
+      debugLog.textContent += `\n[${timestamp}] ${message}`;
+      debugLog.scrollTop = debugLog.scrollHeight;
     }
 
-    function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (file) {
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            fileInfo.classList.add('show');
-            processButton.disabled = false;
-            resultSection.classList.remove('show');
-            transcriptionData = null;
-            log(`File selected: ${file.name} (${formatFileSize(file.size)})`);
+    uploadArea.addEventListener('click', () => audioFileInput.click());
+
+    uploadArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadArea.style.background = '#e8f5e9';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.background = '#f9f9f9';
+    });
+
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.style.background = '#f9f9f9';
+      const files = e.dataTransfer.files;
+      if (files.length > 0) handleFileSelect(files[0]);
+    });
+
+    audioFileInput.addEventListener('change', e => {
+      if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+    });
+
+    function handleFileSelect(file) {
+      selectedFile = file;
+      fileInfo.textContent = `Selected File: ${file.name} (${formatBytes(file.size)})`;
+      fileInfo.style.display = 'block';
+      processButton.disabled = false;
+      log(`File selected: ${file.name} (${formatBytes(file.size)})`);
+    }
+
+    function formatBytes(bytes) {
+      const sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    processButton.addEventListener('click', async () => {
+      if (!selectedFile) return alert('Please select a file.');
+
+      loading.style.display = 'block';
+      processButton.disabled = true;
+      log('Processing started...');
+
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': selectedFile.type || 'audio/mpeg'
+          },
+          body: selectedFile
+        });
+
+        const contentType = response.headers.get('Content-Type') || '';
+        log(`Response Content-Type: ${contentType}`);
+
+        if (contentType.includes('application/vnd.openxmlformats') || contentType.includes('application/octet-stream')) {
+          const blob = await response.blob();
+          log(`DOCX blob received (${blob.size} bytes)`);
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `medical_report_${Date.now()}.docx`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(link.href);
+
+          log('📄 Document downloaded');
+        } else {
+          const text = await response.text();
+          log('⚠️ Unexpected response received:\n' + text);
+          alert('Received unexpected response:\n' + text);
         }
-    }
 
-    function formatFileSize(bytes) {
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
-    }
+      } catch (err) {
+        log('❌ Error: ' + err.message);
+        alert('Error: ' + err.message);
+      } finally {
+        loading.style.display = 'none';
+        processButton.disabled = false;
+        log('Processing finished');
+      }
+    });
 
-    async function testConnection() {
-        log('Testing connection to webhook...');
-        testButton.disabled = true;
-        try {
-            const response = await fetch(WEBHOOK_URL, { method: 'POST' });
-            log(`Test response: ${response.status} ${response.statusText}`);
-            showSuccessMessage('✅ Webhook reachable!');
-        } catch (err) {
-            log(`Connection test error: ${err.message}`);
-            showErrorMessage(`Connection test failed: ${err.message}`);
-        } finally {
-            testButton.disabled = false;
-        }
-    }
+    testButton.addEventListener('click', async () => {
+      log('Testing connection...');
+      try {
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST'
+        });
+        log(`Test response: ${response.status} ${response.statusText}`);
+        alert(`Connection Test: ${response.status} ${response.statusText}`);
+      } catch (err) {
+        log('❌ Connection test failed: ' + err.message);
+        alert('Connection Test Failed: ' + err.message);
+      }
+    });
 
-    async function processAudio() {
-        if (!selectedFile) return alert('Please select an audio file first.');
-
-        log('Processing started...');
-        processButton.disabled = true;
-        loadingIndicator.classList.add('show');
-        resultSection.classList.remove('show');
-
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': selectedFile.type || 'audio/mpeg'
-                },
-                body: selectedFile
-            });
-
-            log(`Response status: ${response.status}`);
-            const contentType = response.headers.get('content-type') || '';
-            log(`Content-Type: ${contentType}`);
-
-            // ➤ Binary DOCX file (application/vnd.openxmlformats)
-            if (contentType.includes('application/vnd.openxmlformats') || contentType.includes('application/octet-stream')) {
-                const blob = await response.blob();
-                log(`Binary blob received (${blob.size} bytes)`);
-                downloadFile(blob, `medical_report_${Date.now()}.docx`);
-                showSuccessMessage('📄 Document downloaded successfully!');
-                return;
-            }
-
-            // ➤ JSON response
-            const text = await response.text();
-            if (!text.trim()) throw new Error('Empty response from server');
-            try {
-                const data = JSON.parse(text);
-                log(`Parsed JSON: ${Object.keys(data).join(', ')}`);
-                transcriptionData = data;
-                displayResults(data);
-                showSuccessMessage('🎉 Audio processed successfully!');
-            } catch (parseError) {
-                log('Failed to parse JSON: ' + parseError.message);
-                throw new Error('Unexpected response format. Content-Type: ' + contentType);
-            }
-        } catch (error) {
-            log('❌ ' + error.message);
-            showErrorMessage('Error: ' + error.message);
-        } finally {
-            loadingIndicator.classList.remove('show');
-            processButton.disabled = false;
-        }
-    }
-
-    function displayResults(data) {
-        transcript.textContent = data.transcript || data.transcription || 'N/A';
-        summary.textContent = data.summary || 'N/A';
-        const terms = data.medical_terms || data.medicalTerms;
-        medicalTerms.textContent = Array.isArray(terms) ? terms.join(', ') : (terms || 'N/A');
-        resultSection.classList.add('show');
-    }
-
-    function downloadFile(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-    }
-
-    function downloadDocument() {
-        if (!transcriptionData) return alert('No transcription data available.');
-        const content = `Transcript:\n${transcriptionData.transcript || 'N/A'}\n\nSummary:\n${transcriptionData.summary || 'N/A'}\n\nMedical Terms:\n${transcriptionData.medical_terms || 'N/A'}`;
-        const blob = new Blob([content], { type: 'text/plain' });
-        downloadFile(blob, `medical_report_${Date.now()}.txt`);
-    }
-
-    function showSuccessMessage(message) {
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <div style="background:#d4edda;color:#155724;padding:20px;margin:10px 0;border:1px solid #c3e6cb;border-radius:10px;text-align:center">
-                ${message}
-            </div>
-        `;
-        resultSection.appendChild(div);
-        resultSection.classList.add('show');
-        setTimeout(() => div.remove(), 5000);
-    }
-
-    function showErrorMessage(message) {
-        resultSection.innerHTML = `
-            <div style="background:#f8d7da;color:#721c24;padding:20px;margin:10px 0;border:1px solid #f5c6cb;border-radius:10px;text-align:center">
-                ❌ ${message}
-                <br><br>
-                <button onclick="location.reload()" style="padding:10px 20px;border:none;background:#dc3545;color:white;border-radius:20px;font-weight:bold;cursor:pointer">
-                    🔄 Try Again
-                </button>
-            </div>
-        `;
-        resultSection.classList.add('show');
-    }
-
-    log('Medical Transcription AI Debug Version loaded');
+    log('Medical Transcription UI ready');
     log(`Webhook URL: ${WEBHOOK_URL}`);
-</script>
-
+  </script>
 
 </body>
 </html>
