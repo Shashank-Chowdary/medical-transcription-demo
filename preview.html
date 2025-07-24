@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Report Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .file-info {
+      background: rgba(255,255,255,0.1);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .timestamp {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-print {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-print:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+
+    .btn-close {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-close:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .btn-back {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .btn-back:hover {
+      background: #7f8c8d;
+      transform: translateY(-2px);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .report-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+      min-height: 600px;
+    }
+
+    .report-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+
+    .report-header h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .report-header p {
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .report-content {
+      padding: 40px;
+      font-family: 'Times New Roman', serif;
+      line-height: 1.8;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .report-content h3 {
+      color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 10px;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+    }
+
+    .report-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .report-content p {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+
+    .report-content ul {
+        list-style-type: disc;
+        margin-left: 25px;
+        margin-bottom: 15px;
+    }
+
+    .report-content li {
+        margin-bottom: 5px;
+    }
+
+
+    .report-content hr {
+      border: none;
+      height: 2px;
+      background: linear-gradient(to right, #3498db, #e74c3c);
+      margin: 30px 0;
+      border-radius: 1px;
+    }
+
+    .no-content {
+      text-align: center;
+      color: #7f8c8d;
+      font-style: italic;
+      margin: 50px 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #3498db;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    .error-message {
+      background: #fdf2f2;
+      color: #e74c3c;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border: 1px solid #f5c6cb;
+      text-align: center;
+    }
+
+    .footer {
+      background: #34495e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .footer p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+      }
+      
+      .header, .footer, .action-buttons {
+        display: none !important;
+      }
+      
+      .main-content {
+        padding: 0;
+      }
+      
+      .report-container {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      
+      .report-content {
+        padding: 20px;
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .action-buttons {
+        justify-content: center;
+      }
+      
+      .main-content {
+        padding: 20px 10px;
+      }
+      
+      .report-content {
+        padding: 20px;
+        font-size: 1rem;
+      }
+      
+      .header h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <h1 id="reportTitle">
+        <span>📋</span>
+        Medical Report Preview
+      </h1>
+      <div class="header-info">
+        <div class="file-info" id="fileInfo">
+          Loading file information...
+        </div>
+        <div class="timestamp" id="timestamp">
+          Generated: Loading...
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-print" id="printBtn">
+          <span>🖨️</span>
+          Print Report
+        </button>
+        <button class="btn btn-back" id="backBtn">
+          <span>←</span>
+          Back to Main
+        </button>
+        <button class="btn btn-close" id="closeBtn">
+          <span>×</span>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="report-container">
+      <div class="report-header">
+        <h2 id="reportSubTitle">Medical Transcription Report</h2>
+        <p>AI-Generated Medical Documentation</p>
+      </div>
+      <div class="report-content" id="reportContent">
+        <div class="loading">Waiting for report content from main application...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Generated by Medical Transcription AI | Confidential Medical Document</p>
+  </div>
+
+  <script>
+    const reportContent = document.getElementById('reportContent');
+    const fileInfo = document.getElementById('fileInfo');
+    const timestampElement = document.getElementById('timestamp'); // Renamed to avoid conflict with Date object
+    const printBtn = document.getElementById('printBtn');
+    const backBtn = document.getElementById('backBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const reportTitle = document.getElementById('reportTitle');
+    const reportSubTitle = document.getElementById('reportSubTitle');
+
+    // Function to parse and format content for display (remains the same)
+    function formatContentForDisplay(content) {
+      if (!content) return '<div class="no-content">No content available</div>';
+
+      let htmlContent = '';
+      const lines = content.split('\n');
+      let inList = false;
+
+      lines.forEach(line => {
+        line = line.trim();
+
+        // Handle horizontal rule
+        if (line === '---') {
+          if (inList) { htmlContent += '</ul>'; inList = false; }
+          htmlContent += '<hr>';
+        }
+        // Handle H3 (your all-caps section titles)
+        else if (line.match(/^[A-Z\s]+$/) && line.length > 0 && !line.includes(':')) { // Basic check for all caps, no colon
+            if (inList) { htmlContent += '</ul>'; inList = false; }
+            htmlContent += `<h3>${line}</h3>`;
+        }
+        // Handle H4 (your "### Subheading" style)
+        else if (line.startsWith('### ')) {
+            if (inList) { htmlContent += '</ul>'; inList = false; }
+            htmlContent += `<h4>${line.substring(4).trim()}</h4>`;
+        }
+        // Handle list items (starting with * or -)
+        else if (line.startsWith('* ') || line.startsWith('- ')) {
+          if (!inList) { htmlContent += '<ul>'; inList = true; }
+          // Convert bold within list item
+          let listItemText = line.substring(2).trim().replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          htmlContent += `<li>${listItemText}</li>`;
+        }
+        // Handle bolding within regular paragraphs
+        else if (line.length > 0) {
+          if (inList) { htmlContent += '</ul>'; inList = false; }
+          let paragraphText = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          htmlContent += `<p>${paragraphText}</p>`;
+        }
+      });
+
+      // Close list if still open at the end
+      if (inList) {
+        htmlContent += '</ul>';
+      }
+
+      // Final cleanup for empty paragraphs created by initial logic or multiple newlines
+      htmlContent = htmlContent.replace(/<p>\s*<\/p>/g, '');
+
+      return htmlContent;
+    }
+
+    // Function to update the UI with received report data
+    function updateReportUI(reportData) {
+        if (!reportData || !reportData.content) {
+            reportContent.innerHTML = '<div class="error-message">No report content received. Please ensure the main application sends data.</div>';
+            fileInfo.textContent = 'No file information';
+            timestampElement.textContent = 'No timestamp available';
+            return;
+        }
+
+        // Determine title based on reportType from the message
+        let reportPrefix = 'Medical Report';
+        if (reportData.reportType === 'audio' || reportData.reportType === 'uploadTab' || reportData.reportType === 'recordTab') {
+            reportPrefix = 'Audio Transcription Report';
+        } else if (reportData.reportType === 'history') {
+            reportPrefix = 'Medical History Comparison Report';
+        }
+
+        reportTitle.innerHTML = `<span>📋</span> ${reportPrefix} Preview`;
+        reportSubTitle.textContent = reportPrefix;
+        reportSubTitle.nextElementSibling.textContent = 'AI-Generated Medical Documentation';
+
+        // Display the content
+        const formattedContent = formatContentForDisplay(reportData.content);
+        reportContent.innerHTML = formattedContent;
+        
+        // Update file info
+        fileInfo.textContent = `Source: ${reportData.filename || 'Unknown file'}`;
+        
+        // Update timestamp
+        const date = new Date(); // Use current date as timestamp isn't directly passed via postMessage in your current index.html
+        // If you want the original timestamp, you'll need to send it in the postMessage as well from index.html
+        timestampElement.textContent = `Generated: ${date.toLocaleString()}`;
+        
+        console.log(`Report data displayed successfully from postMessage.`);
+    }
+
+    // Main logic: Listen for messages from the opener window
+    window.addEventListener('message', (event) => {
+        // IMPORTANT: Verify the origin of the message for security
+        // In a real application, replace 'http://localhost:8080' with the actual origin of your index.html
+        // For development, window.location.origin is generally safe if both files are on the same server/port.
+        if (event.origin !== window.location.origin) { // Or specify your expected origin explicitly
+            console.warn('Message received from unknown origin:', event.origin);
+            return;
+        }
+
+        if (event.data && event.data.type === 'reportPreview' && event.data.content) {
+            console.log('Received report data via postMessage.');
+            updateReportUI(event.data); // Update UI with the received data
+        }
+    });
+
+    // Event listeners for buttons
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    backBtn.addEventListener('click', () => {
+      if (window.opener && !window.opener.closed) {
+        window.opener.focus();
+        window.close();
+      } else {
+        window.history.back(); // Fallback for direct access
+      }
+    });
+
+    closeBtn.addEventListener('click', () => {
+      window.close();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        window.print();
+      } else if (e.key === 'Escape') {
+        window.close();
+      }
+    });
+
+    // Initial display when the page loads, before any message might be received.
+    // This will show the "Waiting..." message.
+    // The actual data will populate when the 'message' event fires.
+    window.addEventListener('load', () => {
+        // You can keep a fallback to sessionStorage if the preview window is opened directly
+        // and not from the main application, but it's less ideal for security.
+        // For now, let's prioritize the postMessage flow.
+        const urlParams = new URLSearchParams(window.location.search);
+        const reportTypeFromUrl = urlParams.get('reportType'); // 'audio' or 'history'
+
+        if (reportTypeFromUrl) {
+            let storedData = null;
+            if (reportTypeFromUrl === 'audio' || reportTypeFromUrl === 'uploadTab' || reportTypeFromUrl === 'recordTab') {
+                storedData = sessionStorage.getItem('audioReportData');
+            } else if (reportTypeFromUrl === 'history') {
+                storedData = sessionStorage.getItem('historyReportData');
+            }
+
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    // Add reportType to parsedData for updateReportUI function
+                    parsedData.reportType = reportTypeFromUrl;
+                    updateReportUI(parsedData);
+                    console.log('Loaded report from sessionStorage as fallback.');
+                    return; // Exit if data was loaded from session storage
+                } catch (e) {
+                    console.error('Error parsing stored session data:', e);
+                }
+            }
+        }
+        // If no data from URL params or sessionStorage, show the waiting message
+        reportContent.innerHTML = '<div class="loading">Waiting for report content from main application...</div>';
+    });
+  </script>
+</body>
+</html>
