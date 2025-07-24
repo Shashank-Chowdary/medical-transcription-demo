@@ -20,7 +20,7 @@
       background: #fff;
       padding: 30px;
       border-radius: 15px;
-      max-width: 700px;
+      max-width: 800px; /* Increased max-width for new section */
       width: 100%;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       text-align: center;
@@ -31,6 +31,48 @@
       margin-bottom: 20px;
     }
 
+    .tab-container {
+      display: flex;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 15px;
+      background: #f8f9fa;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #6c757d;
+    }
+
+    .tab-button.active {
+      background: #3498db;
+      color: white;
+    }
+
+    .tab-button:hover:not(.active) {
+      background: #e9ecef;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .file-upload {
       border: 2px dashed #3498db;
       padding: 30px;
@@ -38,10 +80,101 @@
       cursor: pointer;
       margin-bottom: 20px;
       background: #f9f9f9;
+      transition: background-color 0.3s ease;
     }
 
     .file-upload:hover {
       background: #eef6fc;
+    }
+
+    .recording-section {
+      border: 2px solid #e74c3c;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background: #fdf2f2;
+      transition: all 0.3s ease;
+    }
+
+    .recording-section.recording {
+      border-color: #27ae60;
+      background: #f0f9f0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .record-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      margin: 10px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .record-button.start {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .record-button.start:hover {
+      background: #c0392b;
+      transform: scale(1.1);
+    }
+
+    .record-button.stop {
+      background: #27ae60;
+      color: white;
+      animation: recordingPulse 1.5s infinite;
+    }
+
+    .record-button.stop:hover {
+      background: #229954;
+    }
+
+    @keyframes recordingPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+      50% { box-shadow: 0 0 0 20px rgba(231, 76, 60, 0); }
+    }
+
+    .recording-timer {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e74c3c;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .recording-timer.active {
+      color: #27ae60;
+    }
+
+    .audio-visualizer {
+      width: 100%;
+      height: 60px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .visualizer-bar {
+      width: 4px;
+      background: #3498db;
+      margin: 0 1px;
+      border-radius: 2px;
+      transition: height 0.1s ease;
     }
 
     .file-info {
@@ -59,18 +192,49 @@
       cursor: pointer;
       font-weight: 600;
       margin: 5px;
+      transition: background-color 0.3s ease;
     }
 
-    .button:hover {
+    .button:hover:not(:disabled) {
       background: #45a049;
+    }
+
+    .button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
     }
 
     .test-button {
       background: #3498db;
     }
 
-    .test-button:hover {
+    .test-button:hover:not(:disabled) {
       background: #2980b9;
+    }
+
+    .preview-button {
+      background: #e74c3c;
+    }
+
+    .preview-button:hover:not(:disabled) {
+      background: #c0392b;
+    }
+
+    .send-button {
+      background: #9b59b6;
+    }
+
+    .send-button:hover:not(:disabled) {
+      background: #8e44ad;
+    }
+
+    /* New "Analyze History" button style */
+    .analyze-history-button {
+        background: #f39c12; /* Orange */
+    }
+
+    .analyze-history-button:hover:not(:disabled) {
+        background: #e67e22; /* Darker Orange */
     }
 
     .loading {
@@ -101,7 +265,160 @@
     .debug-log {
       white-space: pre-wrap;
       color: #444;
+      word-wrap: break-word;
     }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      background: #fdf2f2;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #f5c6cb;
+    }
+
+    .success-message {
+      color: #27ae60;
+      background: #f0f9f0;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border: 1px solid #c3e6cb;
+    }
+
+    .download-section {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 1px solid #e9ecef;
+    }
+
+    .download-btn {
+      background: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .download-btn:hover:not(:disabled) {
+      background: #229954;
+    }
+
+    .download-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .permission-notice {
+      background: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      border: 1px solid #ffeaa7;
+    }
+
+    .recording-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .recording-info {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    /* History section styles */
+    .history-upload-section {
+      border: 2px dashed #9b59b6; /* Purple border */
+      padding: 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      background: #f0efff; /* Light purple background */
+      transition: background-color 0.3s ease;
+    }
+
+    .history-upload-section:hover {
+      background: #e8e6ff; /* Lighter purple on hover */
+    }
+
+    .history-file-list {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 15px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fcfcfc;
+    }
+
+    .history-file-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+      font-size: 0.95em;
+    }
+
+    .history-file-list li:last-child {
+      border-bottom: none;
+    }
+
+    .history-file-list li .remove-btn {
+      background: none;
+      border: none;
+      color: #e74c3c;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1.2em;
+      transition: color 0.2s ease;
+    }
+
+    .history-file-list li .remove-btn:hover {
+      color: #c0392b;
+    }
+
+    .history-file-list p {
+      margin: 0;
+    }
+
+    .current-doc-info {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background: #eaf7ff;
+        border: 1px solid #3498db;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: left;
+    }
+
+    /* New audio playback style */
+    #audioPlayback {
+        width: 100%;
+        margin-top: 15px;
+        display: block; /* Ensure it's block level for width to apply */
+    }
+
   </style>
 </head>
 <body>
@@ -109,17 +426,80 @@
   <div class="container">
     <h1>Medical Transcription AI</h1>
 
-    <div class="file-upload" id="uploadArea">
-      Click to upload or drag & drop your audio file
-      <input type="file" id="audioFile" accept=".mp3,.wav,.m4a" style="display:none;">
+    <div class="tab-container">
+      <button class="tab-button active" id="uploadTab">📁 Upload Audio</button>
+      <button class="tab-button" id="recordTab">🎤 Record Audio</button>
+      <button class="tab-button" id="historyTab">📚 History Compare</button>
     </div>
 
-    <div class="file-info" id="fileInfo" style="display:none;"></div>
+    <div class="tab-content active" id="uploadContent">
+      <div class="file-upload" id="uploadArea">
+        Click to upload or drag & drop your audio file
+        <input type="file" id="audioFile" accept=".mp3,.wav,.m4a" style="display:none;">
+      </div>
+      <div class="file-info" id="audioFileInfo" style="display:none;"></div>
+      <div class="button-group">
+        <button class="button" id="processButton" disabled>Process Audio</button>
+      </div>
+    </div>
 
-    <button class="button" id="processButton" disabled>Process Audio</button>
-    <button class="button test-button" id="testButton">Test Connection</button>
+    <div class="tab-content" id="recordContent">
+      <div class="recording-section" id="recordingSection">
+        <div class="recording-info">
+          <h3>🎤 Record Medical Conversation</h3>
+          <p>Click the record button to start recording</p>
+        </div>
+        
+        <div class="recording-controls">
+          <button class="record-button start" id="recordButton">🎤</button>
+          <button class="button" id="pauseButton" style="display:none;">⏸️ Pause</button>
+          <button class="button" id="restartButton" style="display:none;">🔄 Restart</button>
+          <div class="recording-timer" id="recordingTimer">00:00</div>
+        </div>
+        
+        <div class="audio-visualizer" id="audioVisualizer" style="display:none;">
+          </div>
+        
+        <div class="permission-notice" id="permissionNotice" style="display:none;">
+          📋 Please allow microphone access to record audio
+        </div>
+        <audio controls id="audioPlayback" style="display:none;"></audio>
+        <button class="button" id="playRecordedAudioButton" style="display:none;">▶️ Play Recorded</button>
+
+      </div>
+      <div class="file-info" id="recordedFileInfo" style="display:none;"></div>
+      <div class="button-group">
+        <button class="button send-button" id="sendRecordingButton" disabled>Send Recording</button>
+      </div>
+    </div>
+
+    <div class="tab-content" id="historyContent">
+        <div class="current-doc-info" id="currentDocInfo" style="display:none;">
+            Current Report for Comparison: <span id="currentDocFilename">N/A</span>
+        </div>
+        <div class="history-upload-section" id="historyUploadArea">
+            Click to upload or drag & drop historical DOCX files
+            <input type="file" id="historyDocFiles" accept=".docx" multiple style="display:none;">
+        </div>
+        <ul class="history-file-list" id="historyFileList">
+            </ul>
+        <div class="button-group">
+            <button class="button analyze-history-button" id="analyzeHistoryButton" disabled>Analyze History</button>
+        </div>
+    </div>
+
+    <div class="button-group">
+      <!-- <button class="button test-button" id="testButton">Test Connection</button> -->
+      <button class="button preview-button" id="previewButton" disabled>Preview Report</button>
+    </div>
 
     <div class="loading" id="loading" style="display:none;">Processing... Please wait</div>
+
+    <div class="download-section" id="downloadSection" style="display:none;">
+      <h3>📄 Document Ready</h3>
+      <p>Your medical report has been generated successfully!</p>
+      <button class="download-btn" id="downloadBtn">📥 Download Report</button>
+    </div>
 
     <div class="debug-section">
       <h2>🪲 Debug Log</h2>
@@ -130,123 +510,889 @@
   <script>
     const audioFileInput = document.getElementById('audioFile');
     const uploadArea = document.getElementById('uploadArea');
-    const fileInfo = document.getElementById('fileInfo');
+    const audioFileInfo = document.getElementById('audioFileInfo');
     const processButton = document.getElementById('processButton');
+    const sendRecordingButton = document.getElementById('sendRecordingButton');
     const testButton = document.getElementById('testButton');
+    const previewButton = document.getElementById('previewButton');
     const loading = document.getElementById('loading');
     const debugLog = document.getElementById('debugLog');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadSection = document.getElementById('downloadSection');
 
-    const WEBHOOK_URL ='https://n8n-figx.onrender.com/webhook/agent2-audio-upload';
-    //const WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
+    // Tab elements
+    const uploadTab = document.getElementById('uploadTab');
+    const recordTab = document.getElementById('recordTab');
+    const historyTab = document.getElementById('historyTab');
+    const uploadContent = document.getElementById('uploadContent');
+    const recordContent = document.getElementById('recordContent');
+    const historyContent = document.getElementById('historyContent');
 
-    let selectedFile = null;
+    // Recording elements
+    const recordButton = document.getElementById('recordButton');
+    const recordingTimer = document.getElementById('recordingTimer');
+    const recordingSection = document.getElementById('recordingSection');
+    const audioVisualizer = document.getElementById('audioVisualizer');
+    const permissionNotice = document.getElementById('permissionNotice');
+    const recordedFileInfo = document.getElementById('recordedFileInfo');
+    const pauseButton = document.getElementById('pauseButton');
+    const playRecordedAudioButton = document.getElementById('playRecordedAudioButton');
+    const restartButton = document.getElementById('restartButton');
+    const audioPlayback = document.getElementById('audioPlayback');
 
-    function log(message) {
-      const timestamp = new Date().toLocaleTimeString();
-      debugLog.textContent += `\n[${timestamp}] ${message}`;
-      debugLog.scrollTop = debugLog.scrollHeight;
+    // History elements
+    const historyUploadArea = document.getElementById('historyUploadArea');
+    const historyDocFilesInput = document.getElementById('historyDocFiles');
+    const historyFileList = document.getElementById('historyFileList');
+    const analyzeHistoryButton = document.getElementById('analyzeHistoryButton');
+    const currentDocInfo = document.getElementById('currentDocInfo');
+    const currentDocFilename = document.getElementById('currentDocFilename');
+
+
+    // Updated to use localhost by default
+    const AUDIO_UPLOAD_WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
+    const HISTORY_COMPARISON_WEBHOOK_URL = 'http://localhost:5678/webhook/medical-history-comparison';
+
+    let selectedAudioFile = null;
+    let isRecording = false;
+    let isPaused = false;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recordingStartTime = null;
+    let timerInterval = null;
+    let audioContext = null;
+    let analyser = null;
+    let microphone = null;
+    let recordedAudioFile = null;
+    let recordedAudioBlob = null;
+
+    let historicalDocxFiles = [];
+
+    let audioGeneratedReportBlob = null;
+    let audioGeneratedReportFilename = null;
+    let audioGeneratedReportTextPreview = null;
+
+    let historyGeneratedReportBlob = null;
+    let historyGeneratedReportFilename = null;
+    let historyGeneratedReportTextPreview = null;
+
+    let currentReportDocxBlob = null;
+    let currentReportDocxFilename = null;
+
+    // Tab switching
+    uploadTab.addEventListener('click', () => switchTab('upload'));
+    recordTab.addEventListener('click', () => switchTab('record'));
+    historyTab.addEventListener('click', () => switchTab('history'));
+
+    function switchTab(tab) {
+        // Deactivate all
+        uploadTab.classList.remove('active');
+        recordTab.classList.remove('active');
+        historyTab.classList.remove('active');
+        uploadContent.classList.remove('active');
+        recordContent.classList.remove('active');
+        historyContent.classList.remove('active');
+
+        // Reset button visibility
+        processButton.style.display = 'none';
+        sendRecordingButton.style.display = 'none';
+        analyzeHistoryButton.style.display = 'none';
+
+        // Reset download section visibility and button states
+        downloadSection.style.display = 'none';
+        previewButton.disabled = true;
+        downloadBtn.disabled = true;
+
+        // Reset audio recording controls visibility
+        pauseButton.style.display = 'none';
+        playRecordedAudioButton.style.display = 'none';
+        restartButton.style.display = 'none';
+        audioPlayback.style.display = 'none';
+        audioPlayback.pause();
+        audioPlayback.removeAttribute('src');
+
+        if (tab === 'upload') {
+            uploadTab.classList.add('active');
+            uploadContent.classList.add('active');
+            processButton.style.display = 'inline-block';
+            processButton.disabled = !selectedAudioFile;
+            if (audioGeneratedReportBlob) {
+                downloadSection.style.display = 'block';
+                previewButton.disabled = false;
+                downloadBtn.disabled = false;
+            }
+        } else if (tab === 'record') {
+            recordTab.classList.add('active');
+            recordContent.classList.add('active');
+            sendRecordingButton.style.display = 'inline-block';
+            sendRecordingButton.disabled = !recordedAudioFile;
+
+            if (isRecording) {
+                recordButton.textContent = '⏹️';
+                recordButton.className = 'record-button stop';
+                pauseButton.style.display = 'inline-block';
+                pauseButton.textContent = isPaused ? '▶️ Continue' : '⏸️ Pause';
+                restartButton.style.display = 'inline-block';
+            } else {
+                recordButton.textContent = '🎤';
+                recordButton.className = 'record-button start';
+                if (recordedAudioFile) {
+                    playRecordedAudioButton.style.display = 'inline-block';
+                    restartButton.style.display = 'inline-block';
+                }
+            }
+
+            if (audioGeneratedReportBlob) {
+                downloadSection.style.display = 'block';
+                previewButton.disabled = false;
+                downloadBtn.disabled = false;
+            }
+        } else if (tab === 'history') {
+            historyTab.classList.add('active');
+            historyContent.classList.add('active');
+            analyzeHistoryButton.style.display = 'inline-block';
+            updateAnalyzeButtonState();
+            updateCurrentDocInfoDisplay();
+
+            if (historyGeneratedReportBlob) {
+                downloadSection.style.display = 'block';
+                previewButton.disabled = false;
+                downloadBtn.disabled = false;
+            }
+        }
     }
 
+    function log(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = '\n[' + timestamp + '] ' + message;
+        debugLog.textContent += logEntry;
+        debugLog.scrollTop = debugLog.scrollHeight;
+    }
+
+    function showMessage(message, type = 'info') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+        messageDiv.textContent = message;
+
+        const container = document.querySelector('.container');
+        const debugSection = container.querySelector('.debug-section');
+        container.insertBefore(messageDiv, debugSection);
+
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 5000);
+    }
+
+    // File upload event handlers (for audio)
     uploadArea.addEventListener('click', () => audioFileInput.click());
 
     uploadArea.addEventListener('dragover', e => {
-      e.preventDefault();
-      uploadArea.style.background = '#e8f5e9';
+        e.preventDefault();
+        uploadArea.style.background = '#e8f5e9';
     });
 
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.style.background = '#f9f9f9';
+    uploadArea.addEventListener('dragleave', e => {
+        e.preventDefault();
+        uploadArea.style.background = '#f9f9f9';
     });
 
     uploadArea.addEventListener('drop', e => {
-      e.preventDefault();
-      uploadArea.style.background = '#f9f9f9';
-      const files = e.dataTransfer.files;
-      if (files.length > 0) handleFileSelect(files[0]);
+        e.preventDefault();
+        uploadArea.style.background = '#f9f9f9';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleAudioFileSelect(files[0]);
+        }
     });
 
     audioFileInput.addEventListener('change', e => {
-      if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+        if (e.target.files.length > 0) {
+            handleAudioFileSelect(e.target.files[0]);
+        }
     });
 
-    function handleFileSelect(file) {
-      selectedFile = file;
-      fileInfo.textContent = `Selected File: ${file.name} (${formatBytes(file.size)})`;
-      fileInfo.style.display = 'block';
-      processButton.disabled = false;
-      log(`File selected: ${file.name} (${formatBytes(file.size)})`);
+    function handleAudioFileSelect(file) {
+        const validTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/m4a'];
+        if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|m4a)$/i)) {
+            showMessage('Please select a valid audio file (.mp3, .wav, .m4a)', 'error');
+            return;
+        }
+
+        selectedAudioFile = file;
+        audioFileInfo.textContent = 'Selected Audio File: ' + file.name + ' (' + formatBytes(file.size) + ')';
+        audioFileInfo.style.display = 'block';
+        processButton.disabled = false;
+        log('Audio file selected: ' + file.name + ' (' + formatBytes(file.size) + ')');
+    }
+
+    // Recording functionality
+    recordButton.addEventListener('click', () => {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    pauseButton.addEventListener('click', () => {
+        if (mediaRecorder && isRecording) {
+            if (!isPaused) {
+                mediaRecorder.pause();
+                isPaused = true;
+                pauseButton.textContent = '▶️ Continue';
+                recordingTimer.classList.remove('active');
+                audioVisualizer.style.display = 'none';
+                clearInterval(timerInterval);
+                log('Recording paused.');
+            } else {
+                mediaRecorder.resume();
+                isPaused = false;
+                pauseButton.textContent = '⏸️ Pause';
+                recordingTimer.classList.add('active');
+                audioVisualizer.style.display = 'flex';
+                timerInterval = setInterval(updateTimer, 100);
+                log('Recording continued.');
+            }
+        }
+    });
+
+    playRecordedAudioButton.addEventListener('click', () => {
+        if (recordedAudioBlob) {
+            const audioUrl = URL.createObjectURL(recordedAudioBlob);
+            audioPlayback.src = audioUrl;
+            audioPlayback.style.display = 'block';
+            audioPlayback.play();
+            log('Playing recorded audio.');
+        } else {
+            showMessage('No recorded audio to play.', 'error');
+        }
+    });
+
+    restartButton.addEventListener('click', () => {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop(); // Stop current recording first
+        }
+        // Reset all recording related states and UI
+        isRecording = false;
+        isPaused = false;
+        recordedChunks = [];
+        recordedAudioFile = null;
+        recordedAudioBlob = null;
+        recordingStartTime = null;
+        clearInterval(timerInterval);
+        recordingTimer.textContent = '00:00';
+        recordButton.textContent = '🎤';
+        recordButton.className = 'record-button start';
+        recordingSection.classList.remove('recording');
+        recordingTimer.classList.remove('active');
+        audioVisualizer.style.display = 'none';
+        permissionNotice.style.display = 'none';
+        recordedFileInfo.style.display = 'none';
+        sendRecordingButton.disabled = true;
+        pauseButton.style.display = 'none';
+        playRecordedAudioButton.style.display = 'none';
+        restartButton.style.display = 'none';
+        audioPlayback.style.display = 'none';
+        audioPlayback.pause();
+        audioPlayback.removeAttribute('src');
+        log('Recording restarted (cleared).');
+        showMessage('Recording session restarted.', 'info');
+    });
+
+
+    async function startRecording() {
+        try {
+            permissionNotice.style.display = 'none';
+            playRecordedAudioButton.style.display = 'none';
+            audioPlayback.style.display = 'none';
+            audioPlayback.pause();
+            audioPlayback.removeAttribute('src');
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100
+                }
+            });
+
+            log('Microphone access granted');
+
+            mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'audio/webm;codecs=opus'
+            });
+
+            recordedChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                recordedAudioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+                recordedAudioFile = new File([recordedAudioBlob], 'recorded_audio.webm', {
+                    type: 'audio/webm',
+                    lastModified: Date.now()
+                });
+
+                recordedFileInfo.textContent = 'Recorded Audio: ' + formatBytes(recordedAudioFile.size) + ' (Duration: ' + formatTime(getRecordingDuration()) + ')';
+                recordedFileInfo.style.display = 'block';
+                sendRecordingButton.disabled = false;
+                playRecordedAudioButton.style.display = 'inline-block';
+                restartButton.style.display = 'inline-block';
+
+                log('Recording saved: ' + formatBytes(recordedAudioFile.size));
+
+                stream.getTracks().forEach(track => track.stop());
+                if (audioContext) {
+                    audioContext.close();
+                }
+            };
+
+            mediaRecorder.start(100);
+
+            isRecording = true;
+            isPaused = false;
+            recordingStartTime = Date.now();
+            recordButton.textContent = '⏹️';
+            recordButton.className = 'record-button stop';
+            recordingSection.classList.add('recording');
+            recordingTimer.classList.add('active');
+            audioVisualizer.style.display = 'flex';
+            pauseButton.style.display = 'inline-block';
+            pauseButton.textContent = '⏸️ Pause';
+            restartButton.style.display = 'inline-block';
+
+            timerInterval = setInterval(updateTimer, 100);
+
+            setupAudioVisualization(stream);
+
+            log('Recording started');
+
+        } catch (error) {
+            log('❌ Error accessing microphone: ' + error.message);
+            showMessage('Error accessing microphone: ' + error.message, 'error');
+            permissionNotice.style.display = 'block';
+            recordButton.textContent = '🎤';
+            recordButton.className = 'record-button start';
+            pauseButton.style.display = 'none';
+            restartButton.style.display = 'none';
+        }
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            isPaused = false;
+            recordButton.textContent = '🎤';
+            recordButton.className = 'record-button start';
+            recordingSection.classList.remove('recording');
+            recordingTimer.classList.remove('active');
+            audioVisualizer.style.display = 'none';
+            pauseButton.style.display = 'none';
+
+            clearInterval(timerInterval);
+
+            log('Recording stopped');
+        }
+    }
+
+    function updateTimer() {
+        if (recordingStartTime) {
+            const elapsed = Date.now() - recordingStartTime;
+            recordingTimer.textContent = formatTime(elapsed);
+        }
+    }
+
+    function formatTime(milliseconds) {
+        const totalSeconds = Math.floor(milliseconds / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+    }
+
+    function getRecordingDuration() {
+        if (recordingStartTime) {
+            return Date.now() - recordingStartTime;
+        }
+        return 0;
+    }
+
+    function setupAudioVisualization(stream) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        microphone = audioContext.createMediaStreamSource(stream);
+
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        microphone.connect(analyser);
+
+        audioVisualizer.innerHTML = '';
+        for (let i = 0; i < 32; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'visualizer-bar';
+            bar.style.height = '10px';
+            audioVisualizer.appendChild(bar);
+        }
+
+        audioVisualizer.style.display = 'flex';
+
+        function animate() {
+            if (!isRecording || isPaused) return;
+
+            requestAnimationFrame(animate);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            const bars = audioVisualizer.querySelectorAll('.visualizer-bar');
+            bars.forEach((bar, index) => {
+                const value = dataArray[index * 4] || 0;
+                const height = Math.max(10, (value / 255) * 50);
+                bar.style.height = height + 'px';
+            });
+        }
+
+        animate();
     }
 
     function formatBytes(bytes) {
-      const sizes = ['Bytes', 'KB', 'MB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
+    // Helper function to format local timestamp for filenames
+    function getLocalTimestampForFilename() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}-${minutes}-${seconds}`;
+    }
+
+    // Function to handle processing responses from webhooks (audio or history)
+    async function handleWebhookResponse(responsePromise, type, defaultFilenameBase) { // Changed defaultFilename to defaultFilenameBase
+        loading.style.display = 'block';
+        processButton.disabled = true;
+        sendRecordingButton.disabled = true;
+        analyzeHistoryButton.disabled = true;
+        previewButton.disabled = true;
+        downloadBtn.disabled = true;
+        downloadSection.style.display = 'none';
+        log(`Processing ${type} response...`);
+
+        try {
+            const response = await responsePromise;
+            const contentType = response.headers.get('Content-Type') || '';
+            log(`Response Content-Type for ${type}: ${contentType}`);
+
+            if (response.ok) {
+                if (contentType.includes('application/vnd.openxmlformats') ||
+                    contentType.includes('application/octet-stream') ||
+                    contentType.includes('application/msword')) {
+
+                    const blob = await response.blob();
+                    log(`DOCX blob received for ${type} (${blob.size} bytes)`);
+
+                    let filename = defaultFilenameBase; // Use the base name provided
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    if (contentDisposition) {
+                        const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+                        if (filenameMatch && filenameMatch[1]) {
+                            filename = filenameMatch[1]; // Prefer filename from Content-Disposition
+                        }
+                    }
+
+                    // Ensure unique filename by adding local timestamp
+                    const timestamp = getLocalTimestampForFilename();
+                    const baseName = filename.substring(0, filename.lastIndexOf('.'));
+                    const extension = filename.substring(filename.lastIndexOf('.'));
+                    filename = `${baseName}_${timestamp}${extension}`;
+
+
+                    // Try to extract text for preview
+                    let textContent = '';
+                    try {
+                        const textReader = new FileReader();
+                        textReader.readAsText(blob);
+                        await new Promise(resolve => {
+                            textReader.onloadend = () => {
+                                textContent = textReader.result;
+                                resolve();
+                            };
+                            textReader.onerror = () => {
+                                log(`⚠️ FileReader error for ${type} preview text.`);
+                                textContent = `Could not generate text preview for ${type} document directly in browser.`;
+                                resolve();
+                            };
+                        });
+
+                    } catch (textError) {
+                        log(`⚠️ Could not fully extract text directly from ${type} DOCX blob for preview: ${textError.message}`);
+                        textContent = `Document processed, but detailed text preview for ${type} report may not be available directly from browser.`;
+                    }
+
+                    // Store report data based on type
+                    const reportData = {
+                        content: textContent,
+                        timestamp: new Date().toISOString(), // Keep ISO for internal consistency, filename uses local
+                        filename: filename,
+                        blobUrl: URL.createObjectURL(blob)
+                    };
+
+                    if (type === 'audio') {
+                        audioGeneratedReportBlob = blob;
+                        audioGeneratedReportFilename = filename;
+                        audioGeneratedReportTextPreview = textContent;
+                        currentReportDocxBlob = blob;
+                        currentReportDocxFilename = filename;
+                        updateCurrentDocInfoDisplay();
+                        log(`📄 Audio report processed successfully: ${filename}`);
+                        sessionStorage.setItem('audioReportData', JSON.stringify(reportData));
+                        showMessage('Audio report generated successfully! Ready for preview/download and history comparison.', 'success');
+                    } else if (type === 'history') {
+                        historyGeneratedReportBlob = blob;
+                        historyGeneratedReportFilename = filename;
+                        historyGeneratedReportTextPreview = textContent;
+                        log(`📄 History comparison report processed successfully: ${filename}`);
+                        sessionStorage.setItem('historyReportData', JSON.stringify(reportData));
+                        showMessage('History comparison report generated successfully! Ready for preview/download.', 'success');
+                    }
+
+                    const currentActiveTab = document.querySelector('.tab-button.active').id;
+                    if ((type === 'audio' && (currentActiveTab === 'uploadTab' || currentActiveTab === 'recordTab')) ||
+                        (type === 'history' && currentActiveTab === 'historyTab')) {
+                        downloadSection.style.display = 'block';
+                        previewButton.disabled = false;
+                        downloadBtn.disabled = false;
+                    }
+
+
+                } else {
+                    const text = await response.text();
+                    log(`⚠️ Unexpected response format for ${type} (Status: ${response.status})`);
+                    log(`Response body preview: ${text.substring(0, 200)}...`);
+
+                    if (text.includes('<html') || text.includes('<!DOCTYPE')) {
+                        showMessage(`Error: Received HTML page instead of document for ${type}. Please check your n8n workflow configuration.`, 'error');
+                    } else {
+                        showMessage(`Error: Unexpected response format for ${type}. Status: ${response.status}`, 'error');
+                    }
+                }
+            } else {
+                const errorText = await response.text();
+                log(`❌ Server error for ${type}: ${response.status} - ${errorText}`);
+                showMessage(`Server error for ${type}: ${response.status} - ${response.statusText}`, 'error');
+            }
+
+        } catch (err) {
+            log(`❌ Network error for ${type}: ${err.message}`);
+            showMessage(`Network error for ${type}: ${err.message}`, 'error');
+        } finally {
+            loading.style.display = 'none';
+            const currentActiveTab = document.querySelector('.tab-button.active').id;
+            if (currentActiveTab === 'uploadTab') {
+                processButton.disabled = !selectedAudioFile;
+            } else if (currentActiveTab === 'recordTab') {
+                sendRecordingButton.disabled = !recordedAudioFile;
+            } else if (currentActiveTab === 'historyTab') {
+                updateAnalyzeButtonState();
+            }
+            log(`${type} processing finished`);
+        }
+    }
+
+
+    // Event listener for processing audio file (from upload tab)
     processButton.addEventListener('click', async () => {
-      if (!selectedFile) return alert('Please select a file.');
+        if (!selectedAudioFile) {
+            showMessage('Please select an audio file first', 'error');
+            return;
+        }
+        await handleWebhookResponse(
+            fetch(AUDIO_UPLOAD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': selectedAudioFile.type || 'audio/webm',
+                    'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/octet-stream, */*'
+                },
+                body: selectedAudioFile
+            }),
+            'audio',
+            selectedAudioFile.name.replace(/\.[^/.]+$/, "") + '_report.docx'
+        );
+    });
 
-      loading.style.display = 'block';
-      processButton.disabled = true;
-      log('Processing started...');
+    // Event listener for sending recorded audio (from record tab)
+    sendRecordingButton.addEventListener('click', async () => {
+        if (!recordedAudioFile) {
+            showMessage('Please record audio first', 'error');
+            return;
+        }
+        await handleWebhookResponse(
+            fetch(AUDIO_UPLOAD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': recordedAudioFile.type || 'audio/webm',
+                    'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/octet-stream, */*'
+                },
+                body: recordedAudioFile
+            }),
+            'audio',
+            'recorded_audio_report.docx'
+        );
+    });
 
-      try {
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': selectedFile.type || 'audio/mpeg'
-          },
-          body: selectedFile
-        });
 
-        const contentType = response.headers.get('Content-Type') || '';
-        log(`Response Content-Type: ${contentType}`);
+    // History section functionality
+    historyUploadArea.addEventListener('click', () => historyDocFilesInput.click());
 
-        if (contentType.includes('application/vnd.openxmlformats') || contentType.includes('application/octet-stream')) {
-          const blob = await response.blob();
-          log(`DOCX blob received (${blob.size} bytes)`);
+    historyUploadArea.addEventListener('dragover', e => {
+        e.preventDefault();
+        historyUploadArea.style.background = '#e8efff';
+    });
 
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = `medical_report_${Date.now()}.docx`;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          URL.revokeObjectURL(link.href);
+    historyUploadArea.addEventListener('dragleave', e => {
+        e.preventDefault();
+        historyUploadArea.style.background = '#f0efff';
+    });
 
-          log('📄 Document downloaded');
-        } else {
-          const text = await response.text();
-          log('⚠️ Unexpected response received:\n' + text);
-          alert('Received unexpected response:\n' + text);
+    historyUploadArea.addEventListener('drop', e => {
+        e.preventDefault();
+        historyUploadArea.style.background = '#f0efff';
+        const files = e.dataTransfer.files;
+        handleHistoryFiles(files);
+    });
+
+    historyDocFilesInput.addEventListener('change', e => {
+        handleHistoryFiles(e.target.files);
+    });
+
+    function handleHistoryFiles(files) {
+        if (files.length === 0) return;
+
+        for (const file of files) {
+            if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
+                if (!historicalDocxFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    historicalDocxFiles.push(file);
+                    log('Historical DOCX added: ' + file.name);
+                } else {
+                    log('Skipped duplicate historical file: ' + file.name);
+                }
+            } else {
+                showMessage('Skipped invalid file: ' + file.name + '. Only .docx files are accepted for history.', 'error');
+            }
+        }
+        updateHistoryFileList();
+        updateAnalyzeButtonState();
+    }
+
+    function updateHistoryFileList() {
+        historyFileList.innerHTML = '';
+        if (historicalDocxFiles.length === 0) {
+            const listItem = document.createElement('li');
+            listItem.textContent = 'No historical documents selected yet.';
+            historyFileList.appendChild(listItem);
+            return;
         }
 
-      } catch (err) {
-        log('❌ Error: ' + err.message);
-        alert('Error: ' + err.message);
-      } finally {
-        loading.style.display = 'none';
-        processButton.disabled = false;
-        log('Processing finished');
-      }
+        historicalDocxFiles.forEach((file, index) => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <p>${file.name} (${formatBytes(file.size)})</p>
+                <button class="remove-btn" data-index="${index}">×</button>
+            `;
+            historyFileList.appendChild(listItem);
+        });
+
+        historyFileList.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const indexToRemove = parseInt(event.target.dataset.index);
+                historicalDocxFiles.splice(indexToRemove, 1);
+                updateHistoryFileList();
+                updateAnalyzeButtonState();
+                log(`Removed historical DOCX: ${event.target.previousElementSibling.textContent.split(' (')[0]}`);
+            });
+        });
+    }
+
+    function updateAnalyzeButtonState() {
+        analyzeHistoryButton.disabled = !(currentReportDocxBlob && historicalDocxFiles.length > 0);
+        log(`Analyze History button state updated. Current Report: ${!!currentReportDocxBlob}, Historical Files: ${historicalDocxFiles.length}`);
+    }
+
+    function updateCurrentDocInfoDisplay() {
+        if (currentReportDocxBlob) {
+            currentDocInfo.style.display = 'block';
+            currentDocFilename.textContent = currentReportDocxFilename || 'Unnamed Report';
+            log(`Current Report for Comparison set to: ${currentReportDocxFilename}`);
+        } else {
+            currentDocInfo.style.display = 'none';
+            currentDocFilename.textContent = 'N/A';
+            log('No current report available for comparison.');
+        }
+    }
+
+
+    analyzeHistoryButton.addEventListener('click', async () => {
+        if (!currentReportDocxBlob) {
+            showMessage('Please generate a current medical report (from audio upload/record) first.', 'error');
+            return;
+        }
+        if (historicalDocxFiles.length === 0) {
+            showMessage('Please upload at least one historical medical record DOCX.', 'error');
+            return;
+        }
+
+        log('Initiating history comparison...');
+        analyzeHistoryButton.disabled = true;
+
+        const formData = new FormData();
+        formData.append('currentDocx', currentReportDocxBlob, currentReportDocxFilename || 'current_report.docx');
+
+        historicalDocxFiles.forEach((file, index) => {
+            formData.append(`historicalDocx_${index}`, file, file.name);
+        });
+
+
+        try {
+            await handleWebhookResponse(
+                fetch(HISTORY_COMPARISON_WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData,
+                }),
+                'history',
+                'medical_history_comparison_report.docx'
+            );
+        } catch (error) {
+            log(`History comparison submission error: ${error.message}`);
+            showMessage(`History comparison submission error: ${error.message}`, 'error');
+        } finally {
+        }
+    });
+
+
+    // --- Preview Button Logic ---
+    previewButton.addEventListener('click', () => {
+        let contentToPreview = '';
+        let reportFilename = '';
+
+        const currentActiveTabId = document.querySelector('.tab-button.active').id;
+
+        if (currentActiveTabId === 'uploadTab' || currentActiveTabId === 'recordTab') {
+            contentToPreview = audioGeneratedReportTextPreview;
+            reportFilename = audioGeneratedReportFilename;
+        } else if (currentActiveTabId === 'historyTab') {
+            contentToPreview = historyGeneratedReportTextPreview;
+            reportFilename = historyGeneratedReportFilename;
+        }
+
+        if (contentToPreview) {
+            const previewWindow = window.open(`preview.html?reportType=${currentActiveTabId === 'historyTab' ? 'history' : 'audio'}`, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            if (!previewWindow) {
+                showMessage('Please allow popups for this site to open the preview window.', 'error');
+            } else {
+                log(`Preview window opened for ${currentActiveTabId === 'historyTab' ? 'history' : 'audio'} report.`);
+            }
+        } else {
+            showMessage('No report available for preview in this tab.', 'error');
+            log('Attempted to preview, but no report content found for active tab.');
+        }
+    });
+
+    // --- Download Button Logic ---
+    downloadBtn.addEventListener('click', () => {
+        let blobToDownload = null;
+        let filenameToDownload = '';
+
+        const currentActiveTabId = document.querySelector('.tab-button.active').id;
+
+        if (currentActiveTabId === 'uploadTab' || currentActiveTabId === 'recordTab') {
+            blobToDownload = audioGeneratedReportBlob;
+            filenameToDownload = audioGeneratedReportFilename;
+        } else if (currentActiveTabId === 'historyTab') {
+            blobToDownload = historyGeneratedReportBlob;
+            filenameToDownload = historyGeneratedReportFilename;
+        }
+
+        if (blobToDownload) {
+            const url = URL.createObjectURL(blobToDownload);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filenameToDownload || 'downloaded_report.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log(`Report downloaded: ${filenameToDownload || 'downloaded_report.docx'}`);
+        } else {
+            showMessage('No report available for download in this tab.', 'error');
+            log('Attempted to download, but no report blob found for active tab.');
+        }
     });
 
     testButton.addEventListener('click', async () => {
-      log('Testing connection...');
-      try {
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST'
-        });
-        log(`Test response: ${response.status} ${response.statusText}`);
-        alert(`Connection Test: ${response.status} ${response.statusText}`);
-      } catch (err) {
-        log('❌ Connection test failed: ' + err.message);
-        alert('Connection Test Failed: ' + err.message);
-      }
+        log('Testing audio upload connection...');
+        testButton.disabled = true;
+
+        try {
+            const audioTestBlob = new Blob(['test_audio_data'], { type: 'audio/webm' });
+            const audioTestResponse = await fetch(AUDIO_UPLOAD_WEBHOOK_URL, {
+                method: 'POST',
+                body: audioTestBlob,
+                headers: {
+                    'Content-Type': 'audio/webm'
+                }
+            });
+
+            log('Audio Upload Test response: ' + audioTestResponse.status + ' ' + audioTestResponse.statusText);
+
+            log('Testing history comparison connection...');
+            const historyTestResponse = await fetch(HISTORY_COMPARISON_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ test: true })
+            });
+
+            log('History Comparison Test response: ' + historyTestResponse.status + ' ' + historyTestResponse.statusText);
+
+            if (audioTestResponse.ok && historyTestResponse.ok) {
+                showMessage('Connection Test: ✅ SUCCESS - All webhooks reachable!', 'success');
+            } else if (audioTestResponse.ok) {
+                showMessage('Connection Test: ⚠️ WARNING - Audio upload webhook OK, but History Comparison failed: ' + historyTestResponse.status, 'error');
+            } else if (historyTestResponse.ok) {
+                showMessage('Connection Test: ⚠️ WARNING - History Comparison webhook OK, but Audio upload failed: ' + audioTestResponse.status, 'error');
+            } else {
+                showMessage('Connection Test Failed: ❌ Both webhooks unreachable. Check console for details.', 'error');
+            }
+
+        } catch (err) {
+            log('❌ Connection test failed: ' + err.message);
+            showMessage('Connection Test Failed: ❌ ' + err.message, 'error');
+        } finally {
+            testButton.disabled = false;
+        }
     });
 
-    log('Medical Transcription UI ready');
-    log(`Webhook URL: ${WEBHOOK_URL}`);
+    // Initialize
+    updateHistoryFileList();
+    updateAnalyzeButtonState();
+    switchTab('upload');
+    log('Medical Transcription UI with Recording and History ready');
+    log('Audio Upload Webhook URL: ' + AUDIO_UPLOAD_WEBHOOK_URL);
+    log('History Comparison Webhook URL: ' + HISTORY_COMPARISON_WEBHOOK_URL);
   </script>
 
 </body>
