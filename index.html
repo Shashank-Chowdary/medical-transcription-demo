@@ -550,8 +550,13 @@
 
 
     // Updated to use localhost by default
-    const AUDIO_UPLOAD_WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
-    const HISTORY_COMPARISON_WEBHOOK_URL = 'http://localhost:5678/webhook/medical-history-comparison';
+    
+    // const AUDIO_UPLOAD_WEBHOOK_URL = 'http://localhost:5678/webhook/agent2-audio-upload';
+    const AUDIO_UPLOAD_WEBHOOK_URL = 'https://n8n-figx.onrender.com/webhook/agent2-audio-upload';
+    
+    // const HISTORY_COMPARISON_WEBHOOK_URL = 'http://localhost:5678/webhook/medical-history-comparison';
+    const HISTORY_COMPARISON_WEBHOOK_URL = 'https://n8n-figx.onrender.com/webhook/medical-history-comparison';
+
 
     let selectedAudioFile = null;
     let isRecording = false;
